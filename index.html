@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SkillCraft To-Do App</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(124, 58, 237, 0.25),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 90%,
+                    rgba(6, 182, 212, 0.20),
+                    transparent 30%
+                ),
+                #0b0b12;
+            color: white;
+            padding: 25px 15px;
+        }
+
+        /* Background decoration */
+
+        .decoration {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .decoration.one {
+            width: 250px;
+            height: 250px;
+            border: 2px solid rgba(124, 58, 237, 0.2);
+            top: -120px;
+            left: -120px;
+        }
+
+        .decoration.two {
+            width: 300px;
+            height: 300px;
+            border: 2px solid rgba(6, 182, 212, 0.2);
+            bottom: -150px;
+            right: -150px;
+        }
+
+        /* Main container */
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+
+            position: relative;
+            z-index: 1;
+
+            background: rgba(25, 25, 40, 0.97);
+
+            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            border-radius: 25px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.55);
+
+            backdrop-filter: blur(15px);
+        }
+
+        /* Header */
+
+        .brand {
+            text-align: center;
+
+            color: #a78bfa;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            letter-spacing: 2px;
+
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            text-align: center;
+
+            font-size: 35px;
+
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+
+            color: #9292a8;
+
+            font-size: 14px;
+
+            margin-bottom: 25px;
+        }
+
+        /* Input section */
+
+        .task-form {
+            background: #171725;
+
+            border: 1px solid rgba(255,255,255,0.08);
+
+            border-radius: 15px;
+
+            padding: 18px;
+
+            margin-bottom: 20px;
+        }
+
+        .input-row {
+            display: flex;
+
+            gap: 10px;
+        }
+
+        .task-input {
+            flex: 1;
+
+            padding: 14px 15px;
+
+            border: 1px solid #35354a;
+
+            border-radius: 10px;
+
+            background: #10101a;
+
+            color: white;
+
+            outline: none;
+
+            font-size: 15px;
+        }
+
+        .task-input:focus {
+            border-color: #7c3aed;
+
+            box-shadow:
+                0 0 0 3px rgba(124, 58, 237, 0.12);
+        }
+
+        .add-btn {
+            padding: 14px 22px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #7c3aed;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+        }
+
+        .add-btn:hover {
+            background: #6d28d9;
+
+            transform: translateY(-2px);
+        }
+
+        /* Date and time */
+
+        .date-row {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 10px;
+
+            margin-top: 12px;
+        }
+
+        .date-row label {
+            color: #88889c;
+
+            font-size: 12px;
+
+            margin-bottom: 5px;
+
+            display: block;
+        }
+
+        .date-row input {
+            width: 100%;
+
+            padding: 11px;
+
+            border-radius: 9px;
+
+            border: 1px solid #35354a;
+
+            background: #10101a;
+
+            color: white;
+
+            outline: none;
+        }
+
+        /* Search */
+
+        .search-box {
+            margin-bottom: 18px;
+        }
+
+        .search-box input {
+            width: 100%;
+
+            padding: 13px 15px;
+
+            border: 1px solid #35354a;
+
+            border-radius: 10px;
+
+            background: #171725;
+
+            color: white;
+
+            outline: none;
+
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            border-color: #06b6d4;
+        }
+
+        /* Toolbar */
+
+        .toolbar {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 18px;
+
+            flex-wrap: wrap;
+        }
+
+        .filters {
+            display: flex;
+
+            gap: 7px;
+        }
+
+        .filter-btn {
+            padding: 9px 14px;
+
+            border: 1px solid #35354a;
+
+            border-radius: 8px;
+
+            background: #171725;
+
+            color: #9999aa;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+        }
+
+        .filter-btn:hover {
+            color: white;
+
+            background: #25253a;
+        }
+
+        .filter-btn.active {
+            background: #7c3aed;
+
+            color: white;
+
+            border-color: #7c3aed;
+        }
+
+        .task-count {
+            color: #88889c;
+
+            font-size: 13px;
+        }
+
+        /* Task list */
+
+        .task-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+
+            min-height: 80px;
+        }
+
+        .task-item {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 15px;
+
+            background: #171725;
+
+            border: 1px solid rgba(255,255,255,0.08);
+
+            border-radius: 13px;
+
+            transition: 0.25s;
+
+            animation: slideIn 0.25s ease;
+        }
+
+        .task-item:hover {
+            border-color: rgba(167,139,250,0.35);
+
+            transform: translateY(-1px);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Checkbox */
+
+        .check {
+            width: 23px;
+
+            height: 23px;
+
+            border-radius: 50%;
+
+            border: 2px solid #66667b;
+
+            background: transparent;
+
+            flex-shrink: 0;
+
+            cursor: pointer;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            color: white;
+
+            transition: 0.2s;
+        }
+
+        .check:hover {
+            border-color: #a78bfa;
+        }
+
+        .task-item.completed .check {
+            background: #10b981;
+
+            border-color: #10b981;
+        }
+
+        .check::after {
+            content: "✓";
+
+            font-size: 13px;
+
+            opacity: 0;
+        }
+
+        .task-item.completed .check::after {
+            opacity: 1;
+        }
+
+        /* Task information */
+
+        .task-info {
+            flex: 1;
+
+            min-width: 0;
+        }
+
+        .task-title {
+            font-size: 15px;
+
+            color: #eeeeF5;
+
+            word-break: break-word;
+
+            margin-bottom: 5px;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+
+            color: #77778b;
+        }
+
+        .task-time {
+            font-size: 11px;
+
+            color: #88889c;
+        }
+
+        .task-item.overdue:not(.completed) .task-time {
+            color: #f87171;
+        }
+
+        /* Action buttons */
+
+        .actions {
+            display: flex;
+
+            gap: 6px;
+        }
+
+        .action-btn {
+            width: 34px;
+
+            height: 34px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            transition: 0.2s;
+        }
+
+        .edit-btn {
+            background: rgba(59, 130, 246, 0.12);
+
+            color: #60a5fa;
+        }
+
+        .edit-btn:hover {
+            background: rgba(59, 130, 246, 0.25);
+        }
+
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.12);
+
+            color: #f87171;
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        /* Empty message */
+
+        .empty {
+            text-align: center;
+
+            padding: 45px 20px;
+
+            color: #77778b;
+        }
+
+        .empty-icon {
+            font-size: 42px;
+
+            margin-bottom: 10px;
+        }
+
+        .empty p {
+            font-size: 14px;
+        }
+
+        /* Bottom controls */
+
+        .bottom-controls {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-top: 20px;
+
+            padding-top: 18px;
+
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .clear-btn {
+            border: none;
+
+            background: transparent;
+
+            color: #f87171;
+
+            cursor: pointer;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+        .clear-btn:hover {
+            text-decoration: underline;
+        }
+
+        .total {
+            color: #77778b;
+
+            font-size: 12px;
+        }
+
+        footer {
+            text-align: center;
+
+            color: #66667a;
+
+            font-size: 11px;
+
+            margin-top: 22px;
+        }
+
+        /* Edit modal */
+
+        .modal {
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0,0,0,0.7);
+
+            display: none;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 20px;
+
+            z-index: 100;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 100%;
+
+            max-width: 430px;
+
+            background: #191927;
+
+            border: 1px solid rgba(255,255,255,0.1);
+
+            border-radius: 18px;
+
+            padding: 25px;
+
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+
+        .modal-content h2 {
+            font-size: 21px;
+
+            margin-bottom: 18px;
+        }
+
+        .edit-input {
+            width: 100%;
+
+            padding: 13px;
+
+            border-radius: 9px;
+
+            border: 1px solid #35354a;
+
+            background: #10101a;
+
+            color: white;
+
+            outline: none;
+
+            margin-bottom: 15px;
+        }
+
+        .modal-buttons {
+            display: flex;
+
+            gap: 10px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+
+            padding: 12px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+        .save-btn {
+            background: #7c3aed;
+
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #303044;
+
+            color: white;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .container {
+                padding: 20px 15px;
+
+                border-radius: 18px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+
+            .add-btn {
+                width: 100%;
+            }
+
+            .date-row {
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+            .filters {
+                width: 100%;
+            }
+
+            .filter-btn {
+                flex: 1;
+            }
+
+            .task-item {
+                align-items: flex-start;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="decoration one"></div>
+    <div class="decoration two"></div>
+
+
+    <main class="container">
+
+        <!-- Header -->
+
+        <div class="brand">
+            SKILLCRAFT TECHNOLOGY
+        </div>
+
+        <h1>
+            📝 My To-Do List
+        </h1>
+
+        <p class="subtitle">
+            Organize your tasks and stay productive
+        </p>
+
+
+        <!-- Add Task -->
+
+        <section class="task-form">
+
+            <div class="input-row">
+
+                <input
+                    type="text"
+                    id="taskInput"
+                    class="task-input"
+                    placeholder="What needs to be done?"
+                    maxlength="150"
+                >
+
+                <button
+                    class="add-btn"
+                    id="addBtn"
+                >
+                    + Add Task
+                </button>
+
+            </div>
+
+
+            <div class="date-row">
+
+                <div>
+                    <label for="taskDate">
+                        📅 Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="taskDate"
+                    >
+                </div>
+
+
+                <div>
+                    <label for="taskTime">
+                        ⏰ Time
+                    </label>
+
+                    <input
+                        type="time"
+                        id="taskTime"
+                    >
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Search -->
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="🔍 Search tasks..."
+            >
+
+        </div>
+
+
+        <!-- Toolbar -->
+
+        <div class="toolbar">
+
+            <div class="filters">
+
+                <button
+                    class="filter-btn active"
+                    data-filter="all"
+                >
+                    All
+                </button>
+
+                <button
+                    class="filter-btn"
+                    data-filter="active"
+                >
+                    Active
+                </button>
+
+                <button
+                    class="filter-btn"
+                    data-filter="completed"
+                >
+                    Completed
+                </button>
+
+            </div>
+
+
+            <div
+                class="task-count"
+                id="taskCount"
+            >
+                0 tasks
+            </div>
+
+        </div>
+
+
+        <!-- Task list -->
+
+        <div
+            class="task-list"
+            id="taskList"
+        ></div>
+
+
+        <!-- Bottom controls -->
+
+        <div class="bottom-controls">
+
+            <span
+                class="total"
+                id="totalText"
+            >
+                0 total tasks
+            </span>
+
+            <button
+                class="clear-btn"
+                id="clearCompleted"
+            >
+                Clear Completed
+            </button>
+
+        </div>
+
+
+        <footer>
+            ©️ 2026 SkillCraft Technology • To-Do Web Application
+        </footer>
+
+    </main>
+
+
+    <!-- Edit Modal -->
+
+    <div
+        class="modal"
+        id="editModal"
+    >
+
+        <div class="modal-content">
+
+            <h2>
+                ✏️ Edit Task
+            </h2>
+
+            <input
+                type="text"
+                id="editInput"
+                class="edit-input"
+                maxlength="150"
+            >
+
+            <div class="modal-buttons">
+
+                <button
+                    class="cancel-btn"
+                    id="cancelEdit"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    class="save-btn"
+                    id="saveEdit"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* ==========================================
+           VARIABLES
+        ========================================== */
+
+        let tasks =
+            JSON.parse(
+                localStorage.getItem("skillcraftTasks")
+            ) || [];
+
+        let currentFilter = "all";
+
+        let editingTaskId = null;
+
+
+        /* ==========================================
+           ELEMENTS
+        ========================================== */
+
+        const taskInput =
+            document.getElementById("taskInput");
+
+        const taskDate =
+            document.getElementById("taskDate");
+
+        const taskTime =
+            document.getElementById("taskTime");
+
+        const addBtn =
+            document.getElementById("addBtn");
+
+        const taskList =
+            document.getElementById("taskList");
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+        const taskCount =
+            document.getElementById("taskCount");
+
+        const totalText =
+            document.getElementById("totalText");
+
+        const clearCompleted =
+            document.getElementById("clearCompleted");
+
+        const filterButtons =
+            document.querySelectorAll(".filter-btn");
+
+        const editModal =
+            document.getElementById("editModal");
+
+        const editInput =
+            document.getElementById("editInput");
+
+        const cancelEdit =
+            document.getElementById("cancelEdit");
+
+        const saveEdit =
+            document.getElementById("saveEdit");
+
+
+        /* ==========================================
+           SAVE TASKS
+        ========================================== */
+
+        function saveTasks() {
+
+            localStorage.setItem(
+                "skillcraftTasks",
+                JSON.stringify(tasks)
+            );
+
+        }
+
+
+        /* ==========================================
+           ADD TASK
+        ========================================== */
+
+        function addTask() {
+
+            const title =
+                taskInput.value.trim();
+
+
+            if (title === "") {
+
+                alert("Please enter a task.");
+
+                taskInput.focus();
+
+                return;
+
+            }
+
+
+            const newTask = {
+
+                id:
+                    Date.now(),
+
+                title:
+                    title,
+
+                date:
+                    taskDate.value,
+
+                time:
+                    taskTime.value,
+
+                completed:
+                    false,
+
+                createdAt:
+                    new Date().toISOString()
+
+            };
+
+
+            tasks.unshift(newTask);
+
+
+            saveTasks();
+
+            renderTasks();
+
+
+            /* Clear inputs */
+
+            taskInput.value = "";
+
+            taskDate.value = "";
+
+            taskTime.value = "";
+
+
+            taskInput.focus();
+
+        }
+
+
+        /* ==========================================
+           TOGGLE COMPLETE
+        ========================================== */
+
+        function toggleTask(id) {
+
+            tasks =
+                tasks.map(
+                    function(task) {
+
+                        if (
+                            task.id === id
+                        ) {
+
+                            return {
+                                ...task,
+                                completed:
+                                    !task.completed
+                            };
+
+                        }
+
+                        return task;
+
+                    }
+                );
+
+
+            saveTasks();
+
+            renderTasks();
+
+        }
+
+
+        /* ==========================================
